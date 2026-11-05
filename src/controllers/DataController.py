@@ -6,7 +6,7 @@ class DataController(BaseController):
 
     def validate_uploaded_file(self, file):
 
-        if not file:
+        if not file is None or not file.filename:
             return False, "No file provided"
 
         if file.content_type not in self.app_settings.FILE_ALLOWED_EXTENSIONS:
