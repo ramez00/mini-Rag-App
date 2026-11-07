@@ -15,7 +15,9 @@ data_router = APIRouter(
 async def upload_data(project_id: str, file: UploadFile,
                       app_settings: Settings = Depends(get_settings)):
 
-    is_valid, result_signal = DataController().validate_uploaded_file(file=file)
+    data_controller = DataController()
+
+    is_valid, result_signal = data_controller.validate_uploaded_file(file=file)
 
     if not is_valid:
         return JSONResponse(
@@ -24,7 +26,7 @@ async def upload_data(project_id: str, file: UploadFile,
         )
 
     project_path = ProjectController().get_project_path(project_id=project_id)
-    file_path = os.path.join(project_path, file.filename)
+    file_path = data_controller.generate_unique_filename(original_filename=file.filename, project_id=project_id)
 
     async with aiofiles.open(file_path, "wb") as f:
         while chunk := await file.read(app_settings.FILE_DEFAULT_CHUNK_SIZE):
