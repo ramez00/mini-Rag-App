@@ -11,3 +11,4 @@ class ResponseConstants(Enum):
     FILE_UPLOAD_SUCCESS = "File uploaded successfully"
     FILE_SIZE_EXCEEDED = "File size exceeds the maximum limit"
     FILE_INVALID_CONTENT_TYPE = "Invalid content type"
+    FILE_PROCESSING_FAILED = "File processing failed"
