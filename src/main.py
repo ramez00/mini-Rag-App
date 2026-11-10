@@ -8,13 +8,12 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_db_client():
     settings = get_settings()
-
-    app.mongodb_client = AsyncIOMotorClient(settings.MONGO_URI)
-    app.mongodb = app.mongodb_client[settings.MONGO_DB_NAME]
+    app.mongo_conn = AsyncIOMotorClient(settings.MONGO_URI)
+    app.mongodb_client = app.mongo_conn[settings.MONGO_DB_NAME]
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    app.mongodb_client.close()
+    app.mongo_conn.close()
     
 app.include_router(base.base_router)
 app.include_router(data.data_router)

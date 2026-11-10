@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional
-from bson.ObjectId import ObjectId
-
+from bson.objectid import ObjectId
 
 class data_chunk(BaseModel):
     _id: Optional[ObjectId]

@@ -7,6 +7,7 @@ class ProjectModel(BaseDataModel):
 
     def __init__(self,mongodb_client:object):
         super().__init__(mongodb_client=mongodb_client)
+        self.mongodb_client = mongodb_client 
         self.collection = self.mongodb_client[DataBaseEnum.COLLECTION_PROJECT_NAME.value]
 
     async def create_project(self,project:Project):
