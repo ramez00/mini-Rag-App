@@ -8,6 +8,8 @@ from models import ResponseConstants
 import logging
 from .schemes.data import ProcessRequest
 from models.ProjectModel import ProjectModel
+from models.ChunkModel import ChunkModel
+from models.db_schemes import data_chunk
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -58,13 +60,18 @@ async def upload_data(request:Request,project_id: str, file: UploadFile,
     }
 
 @data_router.post("/process/{project_id}")
-async def process_endpoint(project_id: str, request: ProcessRequest):
+async def process_endpoint(request:Request, project_id: str, process_request: ProcessRequest):
 
-    file_id = request.file_id
+    file_id = process_request.file_id
     process_controller = ProcessController(project_id=project_id)
     file_content = process_controller.get_file_content(file_id=file_id)
-    chunk_size = request.chunk_size
-    chunk_overlap = request.overlap_size
+    chunk_size = process_request.chunk_size
+    chunk_overlap = process_request.overlap_size
+    do_reset = process_request.do_reset
+
+    project_model = ProjectModel(mongodb_client=request.app.mongodb_client)
+        
+    project = await project_model.get_project_or_create_one(project_id=project_id)
 
     file_chunks = process_controller.process_file_content(
         file_content=file_content,
@@ -79,4 +86,29 @@ async def process_endpoint(project_id: str, request: ProcessRequest):
             content={"message": ResponseConstants.FILE_PROCESSING_FAILED.value}
         )
 
-    return file_chunks
+    file_chunks_records = [
+        data_chunk(
+            chunk_text = chunk.page_content,
+            chunk_metadata = chunk.metadata,
+            chunk_order = i+1,
+            chunk_project_id = project.id
+        )
+        for i, chunk in enumerate(file_chunks)
+    ]
+
+    chunk_model = ChunkModel(
+        mongodb_client=request.app.mongodb_client
+    )
+
+    if do_reset == 1:
+        _= await chunk_model.delete_chunks_by_project_id(project_id = project_id)
+
+    no_records = await chunk_model.insert_many_chunks(chunks=file_chunks_records)
+
+    return JSONResponse(
+                       status_code=ResponseConstants.SUCCESS.value,
+                       content={
+                           "message": ResponseConstants.FILE_PROCESSING_SUCCESS.value,
+                           "inserted_chunks": no_records
+                        }
+            ) 
