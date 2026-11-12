@@ -12,7 +12,6 @@ class data_chunk(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-
     @classmethod
     def get_indexes(cls):
            return[
