@@ -10,6 +10,12 @@ class ProjectModel(BaseDataModel):
         self.mongodb_client = mongodb_client 
         self.collection = self.mongodb_client[DataBaseEnum.COLLECTION_PROJECT_NAME.value]
 
+    @classmethod
+    async def create_instance(cls,mongodb_client:object):
+        instance = cls(mongodb_client)
+        await instance.init_collection()
+        return instance
+
     async def init_collection(self):
         all_collections = await self.mongodb_client.list_collection_names()
         if DataBaseEnum.COLLECTION_PROJECT_NAME.value not in all_collections:
