@@ -10,6 +10,18 @@ class ProjectModel(BaseDataModel):
         self.mongodb_client = mongodb_client 
         self.collection = self.mongodb_client[DataBaseEnum.COLLECTION_PROJECT_NAME.value]
 
+    async def init_collection(self):
+        all_collections = await self.mongodb_client.list_collection_names()
+        if DataBaseEnum.COLLECTION_PROJECT_NAME.value not in all_collections:
+            self.collection = self.mongodb_client[DataBaseEnum.COLLECTION_PROJECT_NAME.value]
+            indexes = Project.get_indexes()
+            for index in indexes:
+                await self.collection.create_index(
+                    index["key"],
+                    name=index["name"],
+                    unique =index["unique"]
+                )
+
     async def create_project(self,project:Project):
 
         result = await self.collection.insert_one(project.dict(by_alias=True, exclude_unset=True))
