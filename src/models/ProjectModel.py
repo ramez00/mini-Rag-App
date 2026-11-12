@@ -10,6 +10,7 @@ class ProjectModel(BaseDataModel):
         self.mongodb_client = mongodb_client 
         self.collection = self.mongodb_client[DataBaseEnum.COLLECTION_PROJECT_NAME.value]
 
+    # static function to call instractor and call async function to create indexes
     @classmethod
     async def create_instance(cls,mongodb_client:object):
         instance = cls(mongodb_client)

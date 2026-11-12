@@ -22,7 +22,7 @@ data_router = APIRouter(
 async def upload_data(request:Request,project_id: str, file: UploadFile,
                       app_settings: Settings = Depends(get_settings)):
 
-    project_model = ProjectModel(mongodb_client=request.app.mongodb_client)
+    project_model = ProjectModel.create_instance(mongodb_client=request.app.mongodb_client)
 
     project = await project_model.get_project_or_create_one(project_id=project_id)
 
@@ -69,7 +69,7 @@ async def process_endpoint(request:Request, project_id: str, process_request: Pr
     chunk_overlap = process_request.overlap_size
     do_reset = process_request.do_reset
 
-    project_model = ProjectModel(mongodb_client=request.app.mongodb_client)
+    project_model = ProjectModel.create_instance(mongodb_client=request.app.mongodb_client)
         
     project = await project_model.get_project_or_create_one(project_id=project_id)
 
