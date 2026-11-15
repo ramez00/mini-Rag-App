@@ -89,6 +89,13 @@ async def process_endpoint(request:Request, project_id: str, process_request: Pr
                 mongodb_client=request.app.mongodb_client
             )
 
+            # Fetch the project once, before anything uses it
+        project_model = await ProjectModel.create_instance(
+            mongodb_client=request.app.mongodb_client
+        )
+        project = await project_model.get_project_or_create_one(project_id=project_id)
+
+
         project_files = await asset_model.get_all_project_assets(
             asset_project_id=project.id,
             asset_type=AssetTypeEnum.FILE.value
@@ -109,6 +116,9 @@ async def process_endpoint(request:Request, project_id: str, process_request: Pr
                 mongodb_client=request.app.mongodb_client
             )
     
+    
+    do_reset = process_request.do_reset
+    
     if do_reset == 1:
         _= await chunk_model.delete_chunks_by_project_id(project_id = project_id)
 
@@ -119,9 +129,13 @@ async def process_endpoint(request:Request, project_id: str, process_request: Pr
 
     for file_id in project_files_ids:
         file_content = process_controller.get_file_content(file_id=file_id)
+
+        if file_content is None:
+            logger.error(f"Error while processing file : {file_id}")
+            continue
+
         chunk_size = process_request.chunk_size
         chunk_overlap = process_request.overlap_size
-        do_reset = process_request.do_reset
 
         project_model = await ProjectModel.create_instance(mongodb_client=request.app.mongodb_client)
             
