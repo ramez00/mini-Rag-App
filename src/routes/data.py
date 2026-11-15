@@ -81,30 +81,43 @@ async def upload_data(request:Request,project_id: str, file: UploadFile,
 @data_router.post("/process/{project_id}")
 async def process_endpoint(request:Request, project_id: str, process_request: ProcessRequest):
     
-    project_files_ids = []
+    project_files_ids = {}
+
+     # Fetch the project once, before anything uses it
+    project_model = await ProjectModel.create_instance(
+        mongodb_client=request.app.mongodb_client
+    )
+
+    project = await project_model.get_project_or_create_one(
+        project_id=project_id
+    )
+
+    asset_model = await AssetModel.create_instance(
+        mongodb_client=request.app.mongodb_client
+    )
+
     if process_request.file_id is not None:
-        project_files_ids = [process_request.file_id]
-    else:
-        asset_model = await AssetModel.create_instance(
-                mongodb_client=request.app.mongodb_client
-            )
-
-            # Fetch the project once, before anything uses it
-        project_model = await ProjectModel.create_instance(
-            mongodb_client=request.app.mongodb_client
+        asset_record = await asset_model.get_asset_record(
+        asset_project_id=project.id,
+        asset_name=process_request.file_id
         )
-        project = await project_model.get_project_or_create_one(project_id=project_id)
-
+        if asset_record is None:
+            return JSONResponse(
+            status_code=ResponseConstants.BAD_REQUEST.value,
+            content={"message": ResponseConstants.FILE_ID_ERROR.value}
+        )
+        project_files_ids = {asset_record.id: asset_record.asset_name}  
+    else:      
 
         project_files = await asset_model.get_all_project_assets(
             asset_project_id=project.id,
             asset_type=AssetTypeEnum.FILE.value
         )
 
-        project_files_ids = [
-            record["asset_name"]
+        project_files_ids = {
+            record.id : record.asset_name
             for record in project_files
-        ]
+        }
 
     if len(project_files_ids) == 0:
         return JSONResponse(
@@ -127,7 +140,7 @@ async def process_endpoint(request:Request, project_id: str, process_request: Pr
     no_records = 0
     no_file = 0
 
-    for file_id in project_files_ids:
+    for asset_id,file_id in project_files_ids.items():
         file_content = process_controller.get_file_content(file_id=file_id)
 
         if file_content is None:
@@ -159,7 +172,8 @@ async def process_endpoint(request:Request, project_id: str, process_request: Pr
                 chunk_text = chunk.page_content,
                 chunk_metadata = chunk.metadata,
                 chunk_order = i+1,
-                chunk_project_id = project.id
+                chunk_project_id = project.id,
+                chunk_asset_id = asset_id
             )
             for i, chunk in enumerate(file_chunks)
         ]
