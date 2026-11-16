@@ -104,7 +104,7 @@ async def process_endpoint(request:Request, project_id: str, process_request: Pr
         if asset_record is None:
             return JSONResponse(
             status_code=ResponseConstants.BAD_REQUEST.value,
-            content={"message": ResponseConstants.FILE_ID_ERROR.value}
+            content={"message": ResponseConstants.NO_FILES_ERROR.value}
         )
         project_files_ids = {asset_record.id: asset_record.asset_name}  
     else:      
