@@ -123,10 +123,3 @@ class QdrantDB(VectorDBInterface):
 
     def search_by_vector(self, collection_name, vector, limit=5):
         return self.client.search(collection_name, vector, limit)
-
-
-    
-
-    
-
-    
