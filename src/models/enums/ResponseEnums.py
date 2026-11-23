@@ -14,4 +14,7 @@ class ResponseConstants(Enum):
     FILE_PROCESSING_FAILED = "File processing failed"
     FILE_PROCESSING_SUCCESS = "File processing success"
     NO_FILES_ERROR = "not_found_files"
+    PROJECT_NOT_FOUND_ERROR = "project_not_found"
+    INSERT_INTO_DATABASE_ERROR = "insert_into_database_error"
+    INSERT_INTO_DATABASE_SUCCESS = "insert_success_into_vector_db"
 
