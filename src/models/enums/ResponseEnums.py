@@ -17,4 +17,5 @@ class ResponseConstants(Enum):
     PROJECT_NOT_FOUND_ERROR = "project_not_found"
     INSERT_INTO_DATABASE_ERROR = "insert_into_database_error"
     INSERT_INTO_DATABASE_SUCCESS = "insert_success_into_vector_db"
+    VECTORDB_COLLECTION_RETRIEVED = "vectordb_collection_retrived"
 
