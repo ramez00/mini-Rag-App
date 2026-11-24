@@ -31,7 +31,7 @@ class QdrantDB(VectorDBInterface):
         return self.client.get_collections()
 
     def get_collection_info(self, collection_name):
-        return self.client.get_collection_info(collection_name = collection_name)
+        return self.client.get_collection(collection_name = collection_name)
 
     def delete_collection(self, collection_name):
         if self.is_collection_existed(collection_name):
