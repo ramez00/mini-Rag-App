@@ -53,24 +53,25 @@ async def index_project(request : Request , project_id :str,push_request: PushRe
             break
 
         chunks_ids = list(range(idx, idx + len(page_chunks)))
-        idx += len()
+        idx += len(page_chunks)
 
-    is_inserted = nlp_controller.index_into_vector_db(
-        project=project,
-        chunks=project,
-        do_reset=push_request.do_reset,
-        chunks_id = chunks_ids
-    )
 
-    if not is_inserted:
-        return JSONResponse(
-            status_code = ResponseConstants.BAD_REQUEST.value,
-            content={
-                       "message": ResponseConstants.PROJECT_NOT_FOUND_ERROR.value
-                    }
+        is_inserted = nlp_controller.index_into_vector_db(
+            project=project,
+            chunks=page_chunks,
+            do_reset=push_request.do_reset,
+            chunks_ids = chunks_ids
         )
 
-    inserted_item_count += len(page_chunks)
+        if not is_inserted:
+            return JSONResponse(
+                status_code = ResponseConstants.BAD_REQUEST.value,
+                content={
+                        "message": ResponseConstants.PROJECT_NOT_FOUND_ERROR.value
+                        }
+            )
+
+        inserted_item_count += len(page_chunks)
 
     return JSONResponse(
         content ={

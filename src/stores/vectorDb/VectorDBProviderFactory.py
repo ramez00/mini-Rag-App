@@ -13,5 +13,5 @@ class VectorDBProviderFactory():
             db_path = self.base_controller.get_database_path(self.config.VECTOR_DB_PATH)
             return QdrantDB(
                 db_path = db_path,
-                distance_method = None
+                distance_method = self.config.VECTOR_DB_DISTANCE_METHOD
             )

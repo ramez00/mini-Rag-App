@@ -72,7 +72,7 @@ class ChunkModel(BaseDataModel):
                                           "chunk_project_id" : project_id
                               }).skip(
                                           (page_no - 1) * page_size
-                              ).limit(page_size).to_list()
+                              ).limit(page_size).to_list(length=None)
 
            return [
                   data_chunk(**rec)

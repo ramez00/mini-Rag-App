@@ -25,6 +25,6 @@ class BaseController:
         )
 
         if os.path.exists(database_path):
-            os.makedirs(database_path)
+            os.makedirs(database_path, exist_ok=True)
 
         return database_path    
