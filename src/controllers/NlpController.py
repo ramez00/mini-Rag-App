@@ -2,6 +2,7 @@ from .BaseController import BaseController
 from models.db_schemes import Project , data_chunk
 from stores.llm.LLMEnums import DocumentTypeEnum
 from typing import List
+import json
 
 class NlpController(BaseController):
 
@@ -21,7 +22,11 @@ class NlpController(BaseController):
 
     def get_vector_db_collection_info(self, project: Project):
         collection_name = self.create_collection_name(project.project_id)
-        return self.vectordb_client.get_collection_info(collection_name)
+        collection_info =  self.vectordb_client.get_collection_info(collection_name)
+
+        return json.loads(
+            json.dumps(collection_info,default=lambda x: x.__dict__)
+        )
 
     def index_into_vector_db(self, project: Project , chunks: List[data_chunk],chunks_ids : List[int],do_reset:bool=False):
         
