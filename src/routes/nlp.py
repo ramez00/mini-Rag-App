@@ -132,7 +132,7 @@ async def search_index(request : Request , search_request : SearchRequest ,  pro
     return JSONResponse(
              content={
                     "message": ResponseConstants.VECTORDB_SEARCH_SUCCESS.value,
-                     "results": result
+                     "results": [ res.dict()  for res in result ]
                     }
                 )
 
