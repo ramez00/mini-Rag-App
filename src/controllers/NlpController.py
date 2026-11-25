@@ -57,3 +57,30 @@ class NlpController(BaseController):
         )
 
         return True
+
+    def search_vector_db_collection(self,project:Project , text:str ,limit: int = 10):
+        
+        collection_name = self.create_collection_name(project.project_id)
+
+        vector = self.embedding_client.embed_text(text=text,document_type = DocumentTypeEnum.QUERY.value)
+
+        if not vector or len(vector) == 0:
+            return False
+
+        result = self.vectordb_client.search_by_vector(
+            collection_name = collection_name,
+            vector = vector,
+            limit = limit
+        )
+
+        if not result:
+            return False
+
+        return [
+            {
+                "score": point.score,
+                "text": point.payload.get("text"),
+                "metadata": point.payload.get("metadata"),
+            }
+        for point in result
+    ]

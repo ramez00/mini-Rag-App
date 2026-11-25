@@ -1,6 +1,6 @@
 from fastapi import APIRouter , Request
 from fastapi.responses import JSONResponse
-from routes.schemes.nlp import PushRequest
+from routes.schemes.nlp import PushRequest , SearchRequest
 from controllers import NlpController
 from models import ResponseConstants
 from models.ProjectModel import ProjectModel 
@@ -103,4 +103,36 @@ async def get_project_info(request : Request , project_id :str):
                 "collection_info" : collection_info
             }
         ) 
+
+@nlp_router.post("/index/search/{project_id}")
+async def search_index(request : Request , search_request : SearchRequest ,  project_id :str):
+     
+    project_model = await ProjectModel.create_instance(mongodb_client=request.app.mongodb_client)
+            
+    project = await project_model.get_project_or_create_one(project_id=project_id)
+    
+    nlp_controller = NlpController(
+                vectordb_client = request.app.vector_db_client,
+                generation_client = request.app.generation_client,
+                embedding_client = request.app.embedding_client
+            )
+
+    result = nlp_controller.search_vector_db_collection(
+        project=project,text= search_request.text,limit= search_request.limit
+    )
+
+    if not result or len(result) == 0:
+        return JSONResponse(
+                status_code = ResponseConstants.BAD_REQUEST.value,
+                content={
+                        "message": ResponseConstants.VECTORDB_SEARCH_ERROR.value
+                        }
+                )
+
+    return JSONResponse(
+             content={
+                    "message": ResponseConstants.VECTORDB_SEARCH_SUCCESS.value,
+                     "results": result
+                    }
+                )
 

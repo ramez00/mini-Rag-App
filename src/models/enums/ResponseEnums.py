@@ -18,4 +18,6 @@ class ResponseConstants(Enum):
     INSERT_INTO_DATABASE_ERROR = "insert_into_database_error"
     INSERT_INTO_DATABASE_SUCCESS = "insert_success_into_vector_db"
     VECTORDB_COLLECTION_RETRIEVED = "vectordb_collection_retrived"
+    VECTORDB_SEARCH_ERROR = "vectordb_search_error"
+    VECTORDB_SEARCH_SUCCESS = "vectordb_search_success"
 
