@@ -25,3 +25,7 @@ class data_chunk(BaseModel):
                }
    
            ]
+
+class RetrievedDocument(BaseModel):
+     text:str
+     score: float

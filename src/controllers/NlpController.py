@@ -76,11 +76,4 @@ class NlpController(BaseController):
         if not result:
             return False
 
-        return [
-            {
-                "score": point.score,
-                "text": point.payload.get("text"),
-                "metadata": point.payload.get("metadata"),
-            }
-        for point in result
-    ]
+        return  result
