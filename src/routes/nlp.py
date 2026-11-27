@@ -152,8 +152,6 @@ async def search_index(request : Request , search_request : SearchRequest ,  pro
         template_parser = request.app.template_parser
     )
 
-    answer , full_prompt , chat_history = None , None , None
-
     answer , full_prompt , chat_history = nlp_controller.answer_rag_question(
         project=project,
         query=search_request.text,

@@ -81,6 +81,8 @@ class NlpController(BaseController):
 
     def answer_rag_question(self,project:Project , query:str ,limit: int = 10):
 
+        answer , full_prompt , chat_history = None , None , None
+
         retrieved_data = self.search_vector_db_collection(
             project=project,
             text=query,
@@ -88,7 +90,7 @@ class NlpController(BaseController):
         )
 
         if not retrieved_data or len(retrieved_data) == 0 :
-            return None
+            return answer , full_prompt , chat_history
 
         system_prompt = self.template_parser.get("rag","system_prompt")
 
