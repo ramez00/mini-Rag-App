@@ -23,7 +23,7 @@ class CoHereProvider(LLMInterface):
                self.embedding_size = None
 
                self.client = cohere.Client(self.api_key)
-               self.enum = CoHereEnums
+               self.enums = CoHereEnums
 
                self.logger = logging.getLogger(__name__)  
 
@@ -54,7 +54,7 @@ class CoHereProvider(LLMInterface):
             response = self.client.chat(
                 model = self.generation_model_id,
                 chat_history = chat_history,
-                message = self.process_text(prompt),
+                message = prompt,
                 temperature = temperature,
                 max_tokens = max_output_tokens
             )
@@ -95,6 +95,6 @@ class CoHereProvider(LLMInterface):
           def construct_prompt(self, prompt: str, role: str):
                     return {
                         "role": role,
-                        "content": self.process_text(prompt)
+                        "message": self.process_text(prompt)
                     }     
               
